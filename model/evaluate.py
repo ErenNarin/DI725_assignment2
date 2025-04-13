@@ -38,7 +38,7 @@ def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_sample
             )
             target_dict = {
                 "boxes": target_boxes,
-                "labels": target["class_labels"]
+                "labels": target["labels"]
             }
 
             metric.update(preds, [target_dict])

@@ -8,7 +8,7 @@ def visualize_labels(image, target, id2label=None):
     fig, ax = plt.subplots(figsize=(12, 9))
     ax.imshow(image)
 
-    for box, label in zip(target["boxes"], target["class_labels"]):
+    for box, label in zip(target["boxes"], target["labels"]):
         x0, y0, x1, y1 = box.tolist()
         rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
                                  linewidth=2, edgecolor="red", facecolor="none", linestyle="--")
@@ -35,7 +35,7 @@ def visualize_predictions(image, preds, target, id2label=None, threshold=0.8):
             ax.text(x0, y0 - 4, f"{name}: {score:.2f}", color="lime", fontsize=10,
                     bbox=dict(facecolor='black', alpha=0.5, pad=1))
 
-    for box, label in zip(target["boxes"], target["class_labels"]):
+    for box, label in zip(target["boxes"], target["labels"]):
         x0, y0, x1, y1 = box.tolist()
         rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
                                  linewidth=2, edgecolor="red", facecolor="none", linestyle="--")

@@ -42,7 +42,7 @@ class AUAIR(Dataset):
             labels.append(obj["class"])
 
         target = {
-            "class_labels": torch.tensor(labels, dtype=torch.long),
+            "labels": torch.tensor(labels, dtype=torch.long),
             "boxes": torch.tensor(boxes, dtype=torch.float)
         }
 

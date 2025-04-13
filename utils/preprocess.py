@@ -2,28 +2,27 @@ import albumentations as A
 import numpy as np
 
 
-def filter_invalid_bboxes(example):
-    valid_bboxes = []
-    valid_bbox_ids = []
-    valid_categories = []
-    valid_areas = []
+def filter_invalid_bboxes(dataset):
+    for idx in range(len(dataset)):
+        sample = dataset[idx]
+        valid_bboxes = []
+        valid_labels = []
+        bboxes = sample[1]["boxes"]
+        labels = sample[1]["labels"]
+        for i, bbox in enumerate(bboxes):
+            x_min, y_min, x_max, y_max = bbox[:4]
+            if x_min < x_max and y_min < y_max:
+                valid_bboxes.append(bbox)
+                valid_labels.append(labels[i])
+            else:
+                print(
+                    f"Invalid bbox detected in {idx}. sample (Label: {labels[i]}) and discarded: {bbox}"
+                )
 
-    for i, bbox in enumerate(example["objects"]["bbox"]):
-        x_min, y_min, x_max, y_max = bbox[:4]
-        if x_min < x_max and y_min < y_max:
-            valid_bboxes.append(bbox)
-            valid_bbox_ids.append(example["objects"]["bbox_id"][i])
-            valid_categories.append(example["objects"]["category"][i])
-            valid_areas.append(example["objects"]["area"][i])
-        else:
-            print(
-                f"Image with invalid bbox: {example['image_id']} Invalid bbox detected and discarded: {bbox} - bbox_id: {example['objects']['bbox_id'][i]} - category: {example['objects']['category'][i]}"
-            )
+        dataset[idx][1]["boxes"] = valid_bboxes
+        dataset[idx][1]["labels"] = valid_labels
 
-    example["objects"]["bbox"] = valid_bboxes
-    example["objects"]["bbox_id"] = valid_bbox_ids
-    example["objects"]["category"] = valid_categories
-    example["objects"]["area"] = valid_areas
+    return dataset
 
 
 def formatted_anns(image_id, category, area, bbox):
