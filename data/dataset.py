@@ -39,6 +39,16 @@ class AUAIR(Dataset):
                 x_max,
                 y_max,
             ])
+            """
+            TODO normalize
+            
+            boxes.append([
+                x_min / width,
+                y_min / height,
+                x_max / width,
+                y_max / height
+            ])
+            """
             labels.append(obj["class"])
 
         target = {
