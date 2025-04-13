@@ -2,35 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-
-
-def visualize_predictions(image, preds, target, id2label=None):
-    fig, ax = plt.subplots(figsize=(12, 9))
-    ax.imshow(image)
-
-    for box, label, score in zip(preds["boxes"], preds["labels"], preds["scores"]):
-        if score > 0.8:
-            x0, y0, x1, y1 = box.tolist()
-            rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
-                                     linewidth=2, edgecolor="lime", facecolor="none")
-            ax.add_patch(rect)
-            name = id2label[label.item()] if id2label else str(label.item())
-            ax.text(x0, y0 - 4, f"{name}: {score:.2f}", color="lime", fontsize=10,
-                    bbox=dict(facecolor='black', alpha=0.5, pad=1))
-
-    for box, label in zip(target["boxes"], target["labels"]):
-        x0, y0, x1, y1 = box.tolist()
-        rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
-                                 linewidth=2, edgecolor="red", facecolor="none", linestyle="--")
-        ax.add_patch(rect)
-        name = id2label[label.item()] if id2label else str(label.item())
-        ax.text(x0, y1 + 4, f"GT: {name}", color="red", fontsize=10)
-
-    ax.set_axis_off()
-    plt.tight_layout()
-    plt.show()
+from utils.visualize import visualize_predictions
 
 
 def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_samples=None, show_samples=5):

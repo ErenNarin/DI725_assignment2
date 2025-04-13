@@ -9,7 +9,7 @@ processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
 
 class AUAIR(Dataset):
     def __init__(self, annotations, images_dir, transform=None):
-        self.annotations = annotations  # List of annotation dicts (loaded from JSON file)
+        self.annotations = annotations
         self.images_dir = images_dir
         self.transform = transform
 
@@ -33,12 +33,11 @@ class AUAIR(Dataset):
             x_max = x_min + obj["width"]
             y_max = y_min + obj["height"]
 
-            # Normalize
             boxes.append([
-                x_min / width,
-                y_min / height,
-                x_max / width,
-                y_max / height
+                x_min,
+                y_min,
+                x_max,
+                y_max,
             ])
             labels.append(obj["class"])
 

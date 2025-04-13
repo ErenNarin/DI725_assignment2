@@ -1,11 +1,56 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from PIL import Image, ImageDraw
+
+
+def visualize_labels(image, target, id2label=None):
+    fig, ax = plt.subplots(figsize=(12, 9))
+    ax.imshow(image)
+
+    for box, label in zip(target["boxes"], target["class_labels"]):
+        x0, y0, x1, y1 = box.tolist()
+        rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
+                                 linewidth=2, edgecolor="red", facecolor="none", linestyle="--")
+        ax.add_patch(rect)
+        name = id2label[label.item()] if id2label else str(label.item())
+        ax.text(x0, y1, f"GT: {name}", color="red", fontsize=10)
+
+    ax.set_axis_off()
+    plt.tight_layout()
+    plt.show()
+
+
+def visualize_predictions(image, preds, target, id2label=None, threshold=0.8):
+    fig, ax = plt.subplots(figsize=(12, 9))
+    ax.imshow(image)
+
+    for box, label, score in zip(preds["boxes"], preds["labels"], preds["scores"]):
+        if score > threshold:
+            x0, y0, x1, y1 = box.tolist()
+            rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
+                                     linewidth=2, edgecolor="lime", facecolor="none")
+            ax.add_patch(rect)
+            name = id2label[label.item()] if id2label else str(label.item())
+            ax.text(x0, y0 - 4, f"{name}: {score:.2f}", color="lime", fontsize=10,
+                    bbox=dict(facecolor='black', alpha=0.5, pad=1))
+
+    for box, label in zip(target["boxes"], target["class_labels"]):
+        x0, y0, x1, y1 = box.tolist()
+        rect = patches.Rectangle((x0, y0), x1 - x0, y1 - y0,
+                                 linewidth=2, edgecolor="red", facecolor="none", linestyle="--")
+        ax.add_patch(rect)
+        name = id2label[label.item()] if id2label else str(label.item())
+        ax.text(x0, y1 + 4, f"GT: {name}", color="red", fontsize=10)
+
+    ax.set_axis_off()
+    plt.tight_layout()
+    plt.show()
 
 
 def draw_image_from_idx(dataset, idx, id2label):
     sample = dataset[idx]
-    image = sample["image"]
+    image = sample[0]
     annotations = sample["objects"]
     draw = ImageDraw.Draw(image)
     width, height = sample["width"], sample["height"]
