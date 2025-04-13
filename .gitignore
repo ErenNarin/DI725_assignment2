@@ -176,6 +176,8 @@ cython_debug/
 /detr-resnet-50-dc5-fashionpedia-finetuned/
 /detr-finetuned/
 /data/auair2019/
-/model/best_model/
-/model/processor/
+/model/best_model_old/
+/model/processor_old/
 /model/training/
+/model/processor/
+/model/best_model/
