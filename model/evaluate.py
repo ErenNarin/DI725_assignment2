@@ -11,58 +11,59 @@ def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_sample
     model.to(device)
 
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, collate_fn=lambda x: x)
-    metric = MeanAveragePrecision()
+    metric = MeanAveragePrecision(class_metrics=True)
     sample_count = 0
 
-    for batch in tqdm(dataloader, desc="Evaluating"):
-        for sample in batch:
-            image, target = sample
-            image = image.convert("RGB")
-            encoding = processor(images=image, return_tensors="pt").to(device)
+    with torch.no_grad():
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            for sample in batch:
+                image, target = sample
+                image = image.convert("RGB")
+                encoding = processor(images=image, return_tensors="pt").to(device)
 
-            with torch.no_grad():
-                outputs = model(**encoding)
+                with torch.no_grad():
+                    outputs = model(**encoding)
 
-            postprocessed = processor.post_process_object_detection(
-                outputs, target_sizes=[(image.height, image.width)], threshold=0.0
-            )[0]
+                postprocessed = processor.post_process_object_detection(
+                    outputs, target_sizes=[(image.height, image.width)], threshold=0.0
+                )[0]
 
-            preds = [{
-                "boxes": postprocessed["boxes"].cpu(),
-                "scores": postprocessed["scores"].cpu(),
-                "labels": postprocessed["labels"].cpu()
-            }]
+                preds = [{
+                    "boxes": postprocessed["boxes"].cpu(),
+                    "scores": postprocessed["scores"].cpu(),
+                    "labels": postprocessed["labels"].cpu()
+                }]
 
-            target_dict = {
-                "boxes": target["boxes"],
-                "labels": target["class_labels"]
-            }
-            """
-            TODO denormalize
-            
-            target_boxes = target["boxes"] * torch.tensor(
-                [image.width, image.height, image.width, image.height]
-            )
-            target_dict = {
-                "boxes": target_boxes,
-                "labels": target["class_labels"]
-            }
-            """
+                target_dict = {
+                    "boxes": target["boxes"],
+                    "labels": target["class_labels"]
+                }
+                """
+                TODO denormalize
+                
+                target_boxes = target["boxes"] * torch.tensor(
+                    [image.width, image.height, image.width, image.height]
+                )
+                target_dict = {
+                    "boxes": target_boxes,
+                    "labels": target["class_labels"]
+                }
+                """
 
-            metric.update(preds, [target_dict])
+                metric.update(preds, [target_dict])
 
-            if sample_count < show_samples:
-                visualize_predictions(image, preds[0], target_dict, id2label=id2label)
-                sample_count += 1
+                if sample_count < show_samples:
+                    visualize_predictions(image, preds[0], target_dict, id2label=id2label)
+                    sample_count += 1
+
+                if max_samples and sample_count >= max_samples:
+                    break
 
             if max_samples and sample_count >= max_samples:
                 break
 
-        if max_samples and sample_count >= max_samples:
-            break
-
     results = metric.compute()
-    print(f"\n [mAP@IoU=0.50:0.95] = {results['map']:.4f}")
+    print(f"\n mAP = {results['map']:.4f}")
 
     print("\n Per-Class Average Precision (AP):")
     for class_idx, ap in enumerate(results["map_per_class"]):
