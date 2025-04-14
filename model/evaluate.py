@@ -34,13 +34,6 @@ def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_sample
                     "labels": postprocessed["labels"].cpu()
                 }]
 
-                target_dict = {
-                    "boxes": target["boxes"],
-                    "labels": target["class_labels"]
-                }
-                """
-                TODO denormalize
-                
                 target_boxes = target["boxes"] * torch.tensor(
                     [image.width, image.height, image.width, image.height]
                 )
@@ -48,7 +41,6 @@ def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_sample
                     "boxes": target_boxes,
                     "labels": target["class_labels"]
                 }
-                """
 
                 metric.update(preds, [target_dict])
 

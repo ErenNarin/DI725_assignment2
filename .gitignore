@@ -181,3 +181,4 @@ cython_debug/
 /model/training/
 /model/processor/
 /model/best_model/
+/tutorial.ipynb

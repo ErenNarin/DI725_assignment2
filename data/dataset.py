@@ -34,21 +34,11 @@ class AUAIR(Dataset):
             y_max = y_min + obj["height"]
 
             boxes.append([
-                x_min,
-                y_min,
-                x_max,
-                y_max,
-            ])
-            """
-            TODO normalize
-            
-            boxes.append([
                 x_min / width,
                 y_min / height,
                 x_max / width,
                 y_max / height
             ])
-            """
             labels.append(obj["class"])
 
         target = {
