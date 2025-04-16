@@ -55,11 +55,11 @@ def evaluate_model(model, dataset, processor, id2label, batch_size=1, max_sample
                 break
 
     results = metric.compute()
-    print(f"\n mAP = {results['map']:.4f}")
+    print(f"\n mAP = {results['map']:.8f}")
 
     print("\n Per-Class Average Precision (AP):")
     for class_idx, ap in enumerate(results["map_per_class"]):
         label = id2label.get(class_idx, f"class_{class_idx}")
-        print(f"  {label:15s} : {ap:.4f}")
+        print(f"  {label:15s} : {ap:.8f}")
 
     return results
