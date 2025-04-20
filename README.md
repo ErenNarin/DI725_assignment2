@@ -30,7 +30,9 @@ W&B Project: [DI725_assignment_2_2389088_detr-auair](https://wandb.ai/erennarin-
 > ```
 
 > **_NOTE:_** Before executing the training notebook, dataset should be moved under "data/" path. The correct organization should be like this:
+> 
 > data/auair2019/images/frame_*.jpg -> Input images
+> 
 > data/auair2019/annotations.json -> Annotations in json format
 
 To execute end-to-end process, notebooks should be run in this order:
